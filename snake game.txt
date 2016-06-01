@@ -1,0 +1,188 @@
+#include <windows.h>
+# include <iostream>
+# include <stdio.h>
+# include <conio.h>
+using namespace std;
+bool gameover;
+const int weidth = 20;
+const int height = 20;
+int x, y, fX, fY, score;
+int tX[100], tY[100];
+int nt;
+
+
+
+enum eDirection {STOP = 0,LEFT, RIGHT, UP, DOWN};
+eDirection dir;
+void setup()
+{
+
+	gameover = false;
+	dir = STOP;
+	x = weidth / 2;
+	y = height / 2;
+	fX = rand() % weidth;
+	fY = rand() % height;
+	score = 0;
+}
+
+void draw()
+{
+	system("cls");
+	for (int i = 0; i < weidth+2; i++)
+	cout << "#";
+	
+	cout << endl ;
+
+		for (int i = 0; i < height; i++)
+		{
+			for (int j = 0; j < weidth; j++)
+			{
+				if (j == 0)
+					cout << "#";
+				if (i == y && j == x)
+				
+					cout << "O";
+			//	if (i == y - 1 && j == x - 1)
+				//	cout << "o";
+				
+				else if (i == fY && j == fX)
+					cout << "F";
+				else
+				{
+					bool print = false;
+					for (int s = 0; s < nt; s++)  // draws the tail
+					{
+						
+						if (tX[s] == j && tY[s] == i) //our current value i and j
+						{
+							cout << "o";
+							print = true;
+						}
+						
+					}
+					if (!print)
+						cout << " ";
+				}
+				
+				if (j == weidth-1)
+					cout << "#";
+
+			}
+			cout << endl;
+		}
+			
+		
+
+
+		for (int i = 0; i < weidth+2; i++)
+		{			cout << "#";
+}
+	cout << endl;
+	cout << "Score" << score << endl;
+}
+
+void input()
+{
+	if (_kbhit()) // it will tell when a key is pressed
+	{
+		switch (_getch()) //returns our aasci value that was pressed
+		{
+		case 'a':
+			dir = LEFT;
+		break;
+
+		case 'd':
+			dir = RIGHT;
+			break;
+
+		case 's':
+			dir = DOWN;
+			break;
+
+		case 'w':
+			dir = UP;
+			break;
+
+		case 'x':
+			gameover = true;
+			break;
+
+
+
+		}
+	}
+}
+
+void logic()
+{
+	int prevX = tX[0]; // tail
+	int prevY = tY[0];
+	int prev2X, prev2Y;
+	tX[0] = x;
+	tY[0] = y;
+	for (int i = 1; i < nt; i++)
+	{
+	 prev2X = tX[i];
+	 prev2Y = tY[i];
+	 tX[i] = prevX; // tail 
+	 tY[i] = prevY;
+	 prevX = prev2Y;
+	 prevY = prev2Y;  // tail
+
+	}
+	switch (dir)
+	{
+
+	case LEFT:
+		x--;
+		break;
+	case RIGHT:
+		x++;
+		break;
+
+	case UP:
+		y--;
+		break;
+
+	case DOWN:
+		y++;
+		break;
+
+	default:
+		break;
+	}
+	if (x > weidth-1 || x < 0 || y > height || y < 0)
+		gameover = true;
+	for (int i = 0; i < nt; i++)
+
+		if (tX[i] == x && tY[i] == y)
+
+			gameover = true;
+
+	if (x == fX && y == fY)
+	{
+		
+		
+		score += 10;
+		fX = rand() % weidth;
+		fY = rand() % height;
+		cout << "o";
+		nt++;
+	}
+
+}
+
+int main()
+{
+	setup();
+	while (!gameover)
+	{
+		draw();
+		input();
+		logic();
+		Sleep(300);
+		
+	}
+	return 0;
+}
